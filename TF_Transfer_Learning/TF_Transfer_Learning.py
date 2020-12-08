@@ -64,11 +64,11 @@ import tensorflow_hub as hub
 from PIL import Image
 
 try:  
-  # uploaded  = Image.open('./LLFF/scenedir/images/IMG_8667.jpg') "correctly recognizes folding chair"
-  # uploaded  = Image.open('./LLFF/scenedir_2/images/out_img10.png') #labels electricity asset as "doormat"
-  # uploaded  = Image.open('./tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/test-image.JPG') #labels NRECA utility pole image as "dam"
-  # uploaded  = Image.open('./tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/DJI_0227.JPG') #labels NRECA utility pole image as "worm fence"
-  uploaded  = Image.open('./tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/2Q__ (7).jpg') #labels utility pole stock image as "pole"
+  # uploaded  = Image.open('../../LLFF/scenedir/images/IMG_8667.jpg') "correctly recognizes folding chair"
+  # uploaded  = Image.open('../../LLFF/scenedir_2/images/out_img10.png') #labels electricity asset as "doormat"
+  # uploaded  = Image.open('../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/test-image.JPG') #labels NRECA utility pole image as "dam"
+  # uploaded  = Image.open('../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/DJI_0227.JPG') #labels NRECA utility pole image as "worm fence"
+  uploaded  = Image.open('./../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/2Q__ (7).jpg') #labels utility pole stock image as "pole"
 except IOError: 
   pass
 
