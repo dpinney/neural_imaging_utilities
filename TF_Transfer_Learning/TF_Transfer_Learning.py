@@ -63,6 +63,9 @@ import tensorflow_hub as hub
 
 from PIL import Image
 
+print("tensorflow version HERE")
+print(tf.version.VERSION)
+
 try:  
   # uploaded  = Image.open('../../LLFF/scenedir/images/IMG_8667.jpg') "correctly recognizes folding chair"
   # uploaded  = Image.open('../../LLFF/scenedir_2/images/out_img10.png') #labels electricity asset as "doormat"
