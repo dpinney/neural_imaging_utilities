@@ -1,6 +1,6 @@
 # neural_imaging
 
-An image classifier and a 3D image reconstructor for drone imagery of utility poles. Utilizes [Transfer learning with TensorFlow Hub] (https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/images/transfer_learning_with_hub.ipynb#scrollTo=PWUmcKKjtwXL) by The TensorFlow Authors, [Neural Radiance Fields] (https://github.com/bmild/nerf) developed by UC Berkeley/Google Research/UC San Diego, and [Local Light Field Fusion] (https://github.com/Fyusion/LLFF) developed by UC Berkeley/Fyusion Inc/Texas A&M/UC San Diego. 
+An image classifier and a 3D image reconstructor for drone imagery of utility poles. Utilizes [Transfer learning with TensorFlow Hub](https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/images/transfer_learning_with_hub.ipynb#scrollTo=PWUmcKKjtwXL) by The TensorFlow Authors, [Neural Radiance Fields](https://github.com/bmild/nerf) developed by UC Berkeley/Google Research/UC San Diego, and [Local Light Field Fusion](https://github.com/Fyusion/LLFF) developed by UC Berkeley/Fyusion Inc/Texas A&M/UC San Diego. 
 
 # Description
 
