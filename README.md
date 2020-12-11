@@ -16,8 +16,8 @@ Images to be 3D reconstructed within the LLFF subdirectory at a maximum view of 
 
 # File Import 
 
-For image classification: the initial image to be classified should be in a directory called “image_identifier” within the TF_Transfer_Learning subdirectory and all images to be tested should be called “image0” starting with 0 and counting upwards by whole positive integers. For entire directories of images to be run through the classifier, save the directory as a tarfile and in the TF_Transfer_Learning subdirectory. Adjust the code accordingly to the name of the directory of images in line 179. 
-Images to be processed with the LLFF repository must be saved in a subdirectory within the LLFF subdirectory (eg scenedir) in a folder within called images. Ensure that these images are saved as JPEG files. 
+For image classification: the initial image to be classified should be in a directory called “image_identifier” within the neural_imaging repository and all images to be tested should be called “image0” starting with 0 and counting upwards by whole positive integers. For entire directories of images to be run through the classifier, save the directory as a tarfile and in the neural_imaging repository. Adjust the code accordingly to the name of the directory of images on line 179 in TF_Transfer_Learn/TF_Transfer_Learning.py. 
+Images to be processed with the LLFF repository must be saved in a new directory in the neural_imaging repository named scenedir in a folder within called images. Ensure that these images are saved as JPEG files. 
 The directory of images to be 3D reconstructed with NeRF should be ______ and the .npz file containing image/pose/focal information that can be easily imported in the Colab will be outputted for use _____ . 
 
 # Instructions For Use
