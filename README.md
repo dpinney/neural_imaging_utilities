@@ -22,4 +22,4 @@ The directory of images to be 3D reconstructed with NeRF should be ______ and th
 
 # Instructions For Use
 
-Once images are properly stored in a image_identifier directory using proper nomenclature (see above)
+Once images are properly stored in a image_identifier directory using proper nomenclature (see above), run the pole_classifer_classify function of entrypoints.py, which is connected to TF_Transfer_Learning/TF_Transfer_Learning.py. To train the image classifer on a batch of photos, run the pole_classifier_train function in entrypoints.py, which takes the path to a directory of images as an argument and is also connected to TF_Transfer_Learning/TF_Transfer_Learning.py. 
