@@ -95,35 +95,21 @@ classifier = tf.keras.Sequential([
 Download a single image to try the model on.
 """
 
-# grace_hopper = tf.keras.utils.get_file('image.jpg','https://storage.googleapis.com/download.tensorflow.org/example_images/grace_hopper.jpg')
-# grace_hopper = Image.open(grace_hopper).resize(IMAGE_SHAPE)
-# grace_hopper
-
-# grace_hopper = np.array(grace_hopper)/255.0
-# grace_hopper.shape
-
 uploaded = uploaded.resize(IMAGE_SHAPE)
 
 uploaded = np.array(uploaded)/255.0
-print(uploaded.shape)
 
 """Add a batch dimension, and pass the image to the model."""
 
-# result = classifier.predict(grace_hopper[np.newaxis, ...])
-# result.shape
-
 result_2 = classifier.predict(uploaded[np.newaxis, ...])
-print(result_2.shape)
 
 """The result is a 1001 element vector of logits, rating the probability of each class for the image.
 
 So the top class ID can be found with argmax:
 """
 
-# predicted_class = np.argmax(result[0], axis=-1)
-# predicted_class
-
 predicted_class_2 = np.argmax(result_2[0], axis=-1)
+print("Our prediction for this image:  " )
 print(predicted_class_2)
 
 """### Decode the predictions
@@ -133,11 +119,6 @@ Take the predicted class ID and fetch the `ImageNet` labels to decode the predic
 
 labels_path = tf.keras.utils.get_file('ImageNetLabels.txt','https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
 imagenet_labels = np.array(open(labels_path).read().splitlines())
-
-# plt.imshow(grace_hopper)
-# plt.axis('off')
-# predicted_class_name = imagenet_labels[predicted_class]
-# _ = plt.title("Prediction: " + predicted_class_name.title())
 
 plt.imshow(uploaded)
 plt.axis('off')
@@ -152,14 +133,7 @@ But what if you want to train a classifier for a dataset with different classes?
 
 ### Dataset
 
- For this example you will use the TensorFlow flowers dataset:
-"""
-
-# data_root = tf.keras.utils.get_file(
-#   'flower_photos','https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz',
-#    untar=True)
-
-# """Let's load this data into our model using  images off disk using image_dataset_from_directory."""
+Let's load this data into our model using  images off disk using image_dataset_from_directory."""
 
 batch_size = 32
 img_height = 224
@@ -173,9 +147,10 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
   image_size=(img_height, img_width),
   batch_size=batch_size)
 
-# """The flowers dataset has five classes."""
+# """How many classes does our data set have?"""
 
 class_names = np.array(train_ds.class_names)
+print("Our classes are the following: " )
 print(class_names)
 
 # """TensorFlow Hub's conventions for image models is to expect float inputs in the `[0, 1]` range. Use the `Rescaling` layer to achieve this.
