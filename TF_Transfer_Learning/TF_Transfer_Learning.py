@@ -63,9 +63,6 @@ import tensorflow_hub as hub
 
 from PIL import Image
 
-print("tensorflow version HERE")
-print(tf.version.VERSION)
-
 try:  
   # uploaded  = Image.open('../../LLFF/scenedir/images/IMG_8667.jpg') "correctly recognizes folding chair"
   # uploaded  = Image.open('../../LLFF/scenedir_2/images/out_img10.png') #labels electricity asset as "doormat"
@@ -106,7 +103,6 @@ Download a single image to try the model on.
 # grace_hopper.shape
 
 uploaded = uploaded.resize(IMAGE_SHAPE)
-print(uploaded)
 
 uploaded = np.array(uploaded)/255.0
 print(uploaded.shape)
@@ -148,6 +144,7 @@ plt.axis('off')
 predicted_class_name_2 = imagenet_labels[predicted_class_2]
 _ = plt.title("Prediction: " + predicted_class_name_2.title())
 print(predicted_class_name_2)
+plt.show()
 
 """## Simple transfer learning
 
@@ -161,26 +158,6 @@ But what if you want to train a classifier for a dataset with different classes?
 # data_root = tf.keras.utils.get_file(
 #   'flower_photos','https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz',
 #    untar=True)
-
-# import cv2
-# import os
-
-# def load_images_from_folder(folder):
-#     images = []
-#     for filename in os.listdir(folder):
-#         img = cv2.imread(os.path.join(folder,filename))
-#         if img is not None:
-#             images.append(img)
-#     return images
-# folder="./tensorflow-for-poets-2/tf_files/poles_photos/"
-# poles_photos = load_images_from_folder(folder)
-
-# import tarfile
-# poles_photos = tarfile.open("./../../poles_photos.tgz", "r")
-# for member in poles_photos.getmembers():
-#      f = poles_photos.extractfile(member)
-#      if f is not None:
-#          content = f.read()
 
 # """Let's load this data into our model using  images off disk using image_dataset_from_directory."""
 
@@ -230,9 +207,9 @@ for image_batch, labels_batch in train_ds:
 result_batch = classifier.predict(train_ds)
 
 predicted_class_names = imagenet_labels[np.argmax(result_batch, axis=-1)]
-predicted_class_names
+print(predicted_class_names)
 
-# """Now check how these predictions line up with the images:"""
+print("Now check how these predictions line up with the images:")
 
 plt.figure(figsize=(10,9))
 plt.subplots_adjust(hspace=0.5)
@@ -242,6 +219,7 @@ for n in range(30):
   plt.title(predicted_class_names[n])
   plt.axis('off')
 _ = plt.suptitle("ImageNet predictions")
+plt.show()
 
 # """See the `LICENSE.txt` file for image attributions.
 
@@ -282,7 +260,7 @@ model.summary()
 
 predictions = model(image_batch)
 
-predictions.shape
+print(predictions.shape)
 
 # """### Train the model
 
@@ -321,12 +299,14 @@ plt.ylabel("Loss")
 plt.xlabel("Training Steps")
 plt.ylim([0,2])
 plt.plot(batch_stats_callback.batch_losses)
+plt.show()
 
 plt.figure()
 plt.ylabel("Accuracy")
 plt.xlabel("Training Steps")
 plt.ylim([0,1])
 plt.plot(batch_stats_callback.batch_acc)
+plt.show()
 
 # """### Check the predictions
 
@@ -347,6 +327,7 @@ for n in range(30):
   plt.title(predicted_label_batch[n].title())
   plt.axis('off')
 _ = plt.suptitle("Model predictions")
+plt.show()
 
 # """## Export your model
 
