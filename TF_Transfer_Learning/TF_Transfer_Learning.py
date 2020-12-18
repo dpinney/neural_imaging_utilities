@@ -72,7 +72,7 @@ try:
   # uploaded  = Image.open('../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/test-image.JPG') #labels NRECA utility pole image as "dam"
   # uploaded  = Image.open('../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/DJI_0227.JPG') #labels NRECA utility pole image as "worm fence"
   # uploaded  = Image.open('./../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/2Q__ (7).jpg') #labels utility pole stock image as "pole"
-  uploaded = Image.open('./image_identifier/image')
+  uploaded = Image.open('./image_identifier/image0.jpg')
 except IOError: 
   pass
 
@@ -85,7 +85,7 @@ You'll start by using a pretrained classifer model to take an image and predict 
 Use `hub.KerasLayer` to load a [MobileNetV2 model](https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2) from TensorFlow Hub. Any [compatible image classifier model](https://tfhub.dev/s?q=tf2&module-type=image-classification) from tfhub.dev will work here.
 """
 
-classifier_model ="https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/4" #@param {type:"string"}
+classifier_model ="https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/classification/4" #@param {type:"string"}
 
 IMAGE_SHAPE = (224, 224)
 
@@ -158,9 +158,9 @@ But what if you want to train a classifier for a dataset with different classes?
  For this example you will use the TensorFlow flowers dataset:
 """
 
-data_root = tf.keras.utils.get_file(
-  'flower_photos','https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz',
-   untar=True)
+# data_root = tf.keras.utils.get_file(
+#   'flower_photos','https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz',
+#    untar=True)
 
 # import cv2
 # import os
@@ -175,77 +175,73 @@ data_root = tf.keras.utils.get_file(
 # folder="./tensorflow-for-poets-2/tf_files/poles_photos/"
 # poles_photos = load_images_from_folder(folder)
 
-import tarfile
-poles_photos = tarfile.open("poles_photos.tgz", "r:gz")
-for member in poles_photos.getmembers():
-     f = poles_photos.extractfile(member)
-     if f is not None:
-         content = f.read()
-
-data_root = tf.keras.utils.get_file(
-  'poles_photos', poles_photos,
-   untar=True)
+# import tarfile
+# poles_photos = tarfile.open("./../../poles_photos.tgz", "r")
+# for member in poles_photos.getmembers():
+#      f = poles_photos.extractfile(member)
+#      if f is not None:
+#          content = f.read()
 
 # """Let's load this data into our model using  images off disk using image_dataset_from_directory."""
 
-# batch_size = 32
-# img_height = 224
-# img_width = 224
+batch_size = 32
+img_height = 224
+img_width = 224
 
-# train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-#   str(data_root),
-#   validation_split=0.2,
-#   subset="training",
-#   seed=123,
-#   image_size=(img_height, img_width),
-#   batch_size=batch_size)
+train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+  "../../poles_photos",
+  validation_split=0.2,
+  subset="training",
+  seed=123,
+  image_size=(img_height, img_width),
+  batch_size=batch_size)
 
 # """The flowers dataset has five classes."""
 
-# class_names = np.array(train_ds.class_names)
-# print(class_names)
+class_names = np.array(train_ds.class_names)
+print(class_names)
 
 # """TensorFlow Hub's conventions for image models is to expect float inputs in the `[0, 1]` range. Use the `Rescaling` layer to achieve this.
 
 # Note: you could also include the `Rescaling` layer inside the model. See this [guide](https://www.tensorflow.org/guide/keras/preprocessing_layers) for a discussion of the tradeoffs.
 # """
 
-# normalization_layer = tf.keras.layers.experimental.preprocessing.Rescaling(1./255)
-# train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
+normalization_layer = tf.keras.layers.experimental.preprocessing.Rescaling(1./255)
+train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
 
 # """Let's make sure to use buffered prefetching so we can yield data from disk without having I/O become blocking. These are two important methods you should use when loading data.
 
 # Interested readers can learn more about both methods, as well as how to cache data to disk in the [data performance guide](https://www.tensorflow.org/guide/data_performance#prefetching).
 # """
 
-# AUTOTUNE = tf.data.experimental.AUTOTUNE
-# train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
+AUTOTUNE = tf.data.experimental.AUTOTUNE
+train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-# for image_batch, labels_batch in train_ds:
-#   print(image_batch.shape)
-#   print(labels_batch.shape)
-#   break
+for image_batch, labels_batch in train_ds:
+  print(image_batch.shape)
+  print(labels_batch.shape)
+  break
 
 # """### Run the classifier on a batch of images
 
 # Now run the classifier on the image batch.
 # """
 
-# result_batch = classifier.predict(train_ds)
+result_batch = classifier.predict(train_ds)
 
-# predicted_class_names = imagenet_labels[np.argmax(result_batch, axis=-1)]
-# predicted_class_names
+predicted_class_names = imagenet_labels[np.argmax(result_batch, axis=-1)]
+predicted_class_names
 
 # """Now check how these predictions line up with the images:"""
 
-# plt.figure(figsize=(10,9))
-# plt.subplots_adjust(hspace=0.5)
-# for n in range(30):
-#   plt.subplot(6,5,n+1)
-#   plt.imshow(image_batch[n])
-#   plt.title(predicted_class_names[n])
-#   plt.axis('off')
-# _ = plt.suptitle("ImageNet predictions")
+plt.figure(figsize=(10,9))
+plt.subplots_adjust(hspace=0.5)
+for n in range(30):
+  plt.subplot(6,5,n+1)
+  plt.imshow(image_batch[n])
+  plt.title(predicted_class_names[n])
+  plt.axis('off')
+_ = plt.suptitle("ImageNet predictions")
 
 # """See the `LICENSE.txt` file for image attributions.
 
@@ -258,120 +254,120 @@ data_root = tf.keras.utils.get_file(
 # Any [compatible image feature vector model](https://tfhub.dev/s?module-type=image-feature-vector&q=tf2) from tfhub.dev will work here.
 # """
 
-# feature_extractor_model = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4" #@param {type:"string"}
+feature_extractor_model = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4" #@param {type:"string"}
 
 # """Create the feature extractor. Use `trainable=False` to freeze the variables in the feature extractor layer, so that the training only modifies the new classifier layer."""
 
-# feature_extractor_layer = hub.KerasLayer(
-#     feature_extractor_model, input_shape=(224, 224, 3), trainable=False)
+feature_extractor_layer = hub.KerasLayer(
+    feature_extractor_model, input_shape=(224, 224, 3), trainable=False)
 
 # """It returns a 1280-length vector for each image:"""
 
-# feature_batch = feature_extractor_layer(image_batch)
-# print(feature_batch.shape)
+feature_batch = feature_extractor_layer(image_batch)
+print(feature_batch.shape)
 
 # """### Attach a classification head
 
 # Now wrap the hub layer in a `tf.keras.Sequential` model, and add a new classification layer.
 # """
 
-# num_classes = len(class_names)
+num_classes = len(class_names)
 
-# model = tf.keras.Sequential([
-#   feature_extractor_layer,
-#   tf.keras.layers.Dense(num_classes)
-# ])
+model = tf.keras.Sequential([
+  feature_extractor_layer,
+  tf.keras.layers.Dense(num_classes)
+])
 
-# model.summary()
+model.summary()
 
-# predictions = model(image_batch)
+predictions = model(image_batch)
 
-# predictions.shape
+predictions.shape
 
 # """### Train the model
 
 # Use compile to configure the training process:
 # """
 
-# model.compile(
-#   optimizer=tf.keras.optimizers.Adam(),
-#   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-#   metrics=['acc'])
+model.compile(
+  optimizer=tf.keras.optimizers.Adam(),
+  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+  metrics=['acc'])
 
 # """Now use the `.fit` method to train the model.
 
 # To keep this example short train just 2 epochs. To visualize the training progress, use a custom callback to log the loss and accuracy of each batch individually, instead of the epoch average.
 # """
 
-# class CollectBatchStats(tf.keras.callbacks.Callback):
-#   def __init__(self):
-#     self.batch_losses = []
-#     self.batch_acc = []
+class CollectBatchStats(tf.keras.callbacks.Callback):
+  def __init__(self):
+    self.batch_losses = []
+    self.batch_acc = []
 
-#   def on_train_batch_end(self, batch, logs=None):
-#     self.batch_losses.append(logs['loss'])
-#     self.batch_acc.append(logs['acc'])
-#     self.model.reset_metrics()
+  def on_train_batch_end(self, batch, logs=None):
+    self.batch_losses.append(logs['loss'])
+    self.batch_acc.append(logs['acc'])
+    self.model.reset_metrics()
 
-# batch_stats_callback = CollectBatchStats()
+batch_stats_callback = CollectBatchStats()
 
-# history = model.fit(train_ds, epochs=2,
-#                     callbacks=[batch_stats_callback])
+history = model.fit(train_ds, epochs=2,
+                    callbacks=[batch_stats_callback])
 
 # """Now after, even just a few training iterations, we can already see that the model is making progress on the task."""
 
-# plt.figure()
-# plt.ylabel("Loss")
-# plt.xlabel("Training Steps")
-# plt.ylim([0,2])
-# plt.plot(batch_stats_callback.batch_losses)
+plt.figure()
+plt.ylabel("Loss")
+plt.xlabel("Training Steps")
+plt.ylim([0,2])
+plt.plot(batch_stats_callback.batch_losses)
 
-# plt.figure()
-# plt.ylabel("Accuracy")
-# plt.xlabel("Training Steps")
-# plt.ylim([0,1])
-# plt.plot(batch_stats_callback.batch_acc)
+plt.figure()
+plt.ylabel("Accuracy")
+plt.xlabel("Training Steps")
+plt.ylim([0,1])
+plt.plot(batch_stats_callback.batch_acc)
 
 # """### Check the predictions
 
 # To redo the plot from before, first get the ordered list of class names:
 # """
 
-# predicted_batch = model.predict(image_batch)
-# predicted_id = np.argmax(predicted_batch, axis=-1)
-# predicted_label_batch = class_names[predicted_id]
+predicted_batch = model.predict(image_batch)
+predicted_id = np.argmax(predicted_batch, axis=-1)
+predicted_label_batch = class_names[predicted_id]
 
 # """Plot the result"""
 
-# plt.figure(figsize=(10,9))
-# plt.subplots_adjust(hspace=0.5)
-# for n in range(30):
-#   plt.subplot(6,5,n+1)
-#   plt.imshow(image_batch[n])
-#   plt.title(predicted_label_batch[n].title())
-#   plt.axis('off')
-# _ = plt.suptitle("Model predictions")
+plt.figure(figsize=(10,9))
+plt.subplots_adjust(hspace=0.5)
+for n in range(30):
+  plt.subplot(6,5,n+1)
+  plt.imshow(image_batch[n])
+  plt.title(predicted_label_batch[n].title())
+  plt.axis('off')
+_ = plt.suptitle("Model predictions")
 
 # """## Export your model
 
 # Now that you've trained the model, export it as a SavedModel for use later on.
 # """
 
-# t = time.time()
+t = time.time()
 
-# export_path = "/tmp/saved_models/{}".format(int(t))
-# model.save(export_path)
+export_path = "/tmp/saved_models/{}".format(int(t))
+model.save(export_path)
 
-# export_path
+export_path
 
 # """Now confirm that we can reload it, and it still gives the same results:"""
 
-# reloaded = tf.keras.models.load_model(export_path)
+reloaded = tf.keras.models.load_model(export_path)
 
-# result_batch = model.predict(image_batch)
-# reloaded_result_batch = reloaded.predict(image_batch)
+result_batch = model.predict(image_batch)
+reloaded_result_batch = reloaded.predict(image_batch)
 
-# abs(reloaded_result_batch - result_batch).max()
+abs(reloaded_result_batch - result_batch).max()
 
 """This SavedModel can be loaded for inference later, or converted to [TFLite](https://www.tensorflow.org/lite/convert/) or [TFjs](https://github.com/tensorflow/tfjs-converter).
 
