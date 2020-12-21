@@ -51,6 +51,8 @@ This tutorial demonstrates how to:
 
 ## Setup
 """
+import os
+import sys
 
 import numpy as np
 import time
@@ -63,271 +65,269 @@ import tensorflow_hub as hub
 
 from PIL import Image
 
-try:  
-  # uploaded  = Image.open('../../LLFF/scenedir/images/IMG_8667.jpg') "correctly recognizes folding chair"
-  # uploaded  = Image.open('../../LLFF/scenedir_2/images/out_img10.png') #labels electricity asset as "doormat"
-  # uploaded  = Image.open('../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/test-image.JPG') #labels NRECA utility pole image as "dam"
-  # uploaded  = Image.open('../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/DJI_0227.JPG') #labels NRECA utility pole image as "worm fence"
-  # uploaded  = Image.open('./../../tensorflow-for-poets-2/tf_files/poles_photos/Utility_Pole_Present/2Q__ (7).jpg') #labels utility pole stock image as "pole"
-  uploaded = Image.open('./image_identifier/image0.jpg')
-except IOError: 
-  pass
 
-"""## An ImageNet classifier
+def image_classifier(uploaded): 
 
-You'll start by using a pretrained classifer model to take an image and predict what it's an image of - no training required!
+  try:  
+    uploaded = Image.open(uploaded)
+  except IOError: 
+    pass
 
-### Download the classifier
+  """## An ImageNet classifier
 
-Use `hub.KerasLayer` to load a [MobileNetV2 model](https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2) from TensorFlow Hub. Any [compatible image classifier model](https://tfhub.dev/s?q=tf2&module-type=image-classification) from tfhub.dev will work here.
-"""
+  You'll start by using a pretrained classifer model to take an image and predict what it's an image of - no training required!
 
-classifier_model ="https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/classification/4" #@param {type:"string"}
+  ### Download the classifier
 
-IMAGE_SHAPE = (224, 224)
+  Use `hub.KerasLayer` to load a [MobileNetV2 model](https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2) from TensorFlow Hub. Any [compatible image classifier model](https://tfhub.dev/s?q=tf2&module-type=image-classification) from tfhub.dev will work here.
+  """
 
-classifier = tf.keras.Sequential([
-    hub.KerasLayer(classifier_model, input_shape=IMAGE_SHAPE+(3,))
-])
+  classifier_model ="https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/classification/4" #@param {type:"string"}
 
-"""### Run it on a single image
+  IMAGE_SHAPE = (224, 224)
 
-Download a single image to try the model on.
-"""
+  classifier = tf.keras.Sequential([
+      hub.KerasLayer(classifier_model, input_shape=IMAGE_SHAPE+(3,))
+  ])
 
-uploaded = uploaded.resize(IMAGE_SHAPE)
+  """### Run it on a single image
 
-uploaded = np.array(uploaded)/255.0
+  Download a single image to try the model on.
+  """
 
-"""Add a batch dimension, and pass the image to the model."""
+  uploaded = uploaded.resize(IMAGE_SHAPE)
 
-result_2 = classifier.predict(uploaded[np.newaxis, ...])
+  uploaded = np.array(uploaded)/255.0
 
-"""The result is a 1001 element vector of logits, rating the probability of each class for the image.
+  """Add a batch dimension, and pass the image to the model."""
 
-So the top class ID can be found with argmax:
-"""
+  result_2 = classifier.predict(uploaded[np.newaxis, ...])
 
-predicted_class_2 = np.argmax(result_2[0], axis=-1)
-print("Our prediction for this image:  " )
-print(predicted_class_2)
+  """The result is a 1001 element vector of logits, rating the probability of each class for the image.
 
-"""### Decode the predictions
+  So the top class ID can be found with argmax:
+  """
 
-Take the predicted class ID and fetch the `ImageNet` labels to decode the predictions
-"""
+  predicted_class_2 = np.argmax(result_2[0], axis=-1)
 
-labels_path = tf.keras.utils.get_file('ImageNetLabels.txt','https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
-imagenet_labels = np.array(open(labels_path).read().splitlines())
+  """### Decode the predictions
 
-plt.imshow(uploaded)
-plt.axis('off')
-predicted_class_name_2 = imagenet_labels[predicted_class_2]
-_ = plt.title("Prediction: " + predicted_class_name_2.title())
-print(predicted_class_name_2)
-plt.show()
+  Take the predicted class ID and fetch the `ImageNet` labels to decode the predictions
+  """
 
-"""## Simple transfer learning
+  labels_path = tf.keras.utils.get_file('ImageNetLabels.txt','https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
+  imagenet_labels = np.array(open(labels_path).read().splitlines())
 
-But what if you want to train a classifier for a dataset with different classes? You can also use a model from TFHub to train a custom image classier by retraining the top layer of the model to recognize the classes in our dataset.
-
-### Dataset
-
-Let's load this data into our model using  images off disk using image_dataset_from_directory."""
-
-batch_size = 32
-img_height = 224
-img_width = 224
-
-train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-  "../../poles_photos",
-  validation_split=0.2,
-  subset="training",
-  seed=123,
-  image_size=(img_height, img_width),
-  batch_size=batch_size)
-
-# """How many classes does our data set have?"""
-
-class_names = np.array(train_ds.class_names)
-print("Our classes are the following: " )
-print(class_names)
-
-# """TensorFlow Hub's conventions for image models is to expect float inputs in the `[0, 1]` range. Use the `Rescaling` layer to achieve this.
-
-# Note: you could also include the `Rescaling` layer inside the model. See this [guide](https://www.tensorflow.org/guide/keras/preprocessing_layers) for a discussion of the tradeoffs.
-# """
-
-normalization_layer = tf.keras.layers.experimental.preprocessing.Rescaling(1./255)
-train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
-
-# """Let's make sure to use buffered prefetching so we can yield data from disk without having I/O become blocking. These are two important methods you should use when loading data.
-
-# Interested readers can learn more about both methods, as well as how to cache data to disk in the [data performance guide](https://www.tensorflow.org/guide/data_performance#prefetching).
-# """
-
-AUTOTUNE = tf.data.experimental.AUTOTUNE
-train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
-
-for image_batch, labels_batch in train_ds:
-  print(image_batch.shape)
-  print(labels_batch.shape)
-  break
-
-# """### Run the classifier on a batch of images
-
-# Now run the classifier on the image batch.
-# """
-
-result_batch = classifier.predict(train_ds)
-
-predicted_class_names = imagenet_labels[np.argmax(result_batch, axis=-1)]
-print(predicted_class_names)
-
-print("Now check how these predictions line up with the images:")
-
-plt.figure(figsize=(10,9))
-plt.subplots_adjust(hspace=0.5)
-for n in range(30):
-  plt.subplot(6,5,n+1)
-  plt.imshow(image_batch[n])
-  plt.title(predicted_class_names[n])
+  plt.imshow(uploaded)
   plt.axis('off')
-_ = plt.suptitle("ImageNet predictions")
-plt.show()
+  predicted_class_name_2 = imagenet_labels[predicted_class_2]
+  _ = plt.title("Prediction: " + predicted_class_name_2.title())
+  print(predicted_class_name_2)
+  plt.show()
 
-# """See the `LICENSE.txt` file for image attributions.
 
-# The results are far from perfect, but reasonable considering that these are not the classes the model was trained for (except "daisy").
+def transfer_learning():
+  """## Simple transfer learning
 
-# ### Download the headless model
+  But what if you want to train a classifier for a dataset with different classes? You can also use a model from TFHub to train a custom image classier by retraining the top layer of the model to recognize the classes in our dataset.
 
-# TensorFlow Hub also distributes models without the top classification layer. These can be used to easily do transfer learning.
+  ### Dataset
 
-# Any [compatible image feature vector model](https://tfhub.dev/s?module-type=image-feature-vector&q=tf2) from tfhub.dev will work here.
-# """
+  Let's load this data into our model using  images off disk using image_dataset_from_directory."""
 
-feature_extractor_model = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4" #@param {type:"string"}
+  batch_size = 32
+  img_height = 224
+  img_width = 224
 
-# """Create the feature extractor. Use `trainable=False` to freeze the variables in the feature extractor layer, so that the training only modifies the new classifier layer."""
+  train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    "../../poles_photos",
+    validation_split=0.2,
+    subset="training",
+    seed=123,
+    image_size=(img_height, img_width),
+    batch_size=batch_size)
 
-feature_extractor_layer = hub.KerasLayer(
-    feature_extractor_model, input_shape=(224, 224, 3), trainable=False)
+  # """How many classes does our data set have?"""
 
-# """It returns a 1280-length vector for each image:"""
+  class_names = np.array(train_ds.class_names)
+  print("Our classes are the following: " )
+  print(class_names)
 
-feature_batch = feature_extractor_layer(image_batch)
-print(feature_batch.shape)
+  # """TensorFlow Hub's conventions for image models is to expect float inputs in the `[0, 1]` range. Use the `Rescaling` layer to achieve this.
 
-# """### Attach a classification head
+  # Note: you could also include the `Rescaling` layer inside the model. See this [guide](https://www.tensorflow.org/guide/keras/preprocessing_layers) for a discussion of the tradeoffs.
+  # """
 
-# Now wrap the hub layer in a `tf.keras.Sequential` model, and add a new classification layer.
-# """
+  normalization_layer = tf.keras.layers.experimental.preprocessing.Rescaling(1./255)
+  train_ds = train_ds.map(lambda x, y: (normalization_layer(x), y))
 
-num_classes = len(class_names)
+  # """Let's make sure to use buffered prefetching so we can yield data from disk without having I/O become blocking. These are two important methods you should use when loading data.
 
-model = tf.keras.Sequential([
-  feature_extractor_layer,
-  tf.keras.layers.Dense(num_classes)
-])
+  # Interested readers can learn more about both methods, as well as how to cache data to disk in the [data performance guide](https://www.tensorflow.org/guide/data_performance#prefetching).
+  # """
 
-model.summary()
+  AUTOTUNE = tf.data.experimental.AUTOTUNE
+  train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
-predictions = model(image_batch)
+  for image_batch, labels_batch in train_ds:
+    print(image_batch.shape)
+    print(labels_batch.shape)
+    break
 
-print(predictions.shape)
+  # """### Run the classifier on a batch of images
 
-# """### Train the model
+  # Now run the classifier on the image batch.
+  # """
 
-# Use compile to configure the training process:
-# """
+  result_batch = classifier.predict(train_ds)
 
-model.compile(
-  optimizer=tf.keras.optimizers.Adam(),
-  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-  metrics=['acc'])
+  predicted_class_names = imagenet_labels[np.argmax(result_batch, axis=-1)]
+  print(predicted_class_names)
 
-# """Now use the `.fit` method to train the model.
+  print("Now check how these predictions line up with the images:")
 
-# To keep this example short train just 2 epochs. To visualize the training progress, use a custom callback to log the loss and accuracy of each batch individually, instead of the epoch average.
-# """
+  plt.figure(figsize=(10,9))
+  plt.subplots_adjust(hspace=0.5)
+  for n in range(30):
+    plt.subplot(6,5,n+1)
+    plt.imshow(image_batch[n])
+    plt.title(predicted_class_names[n])
+    plt.axis('off')
+  _ = plt.suptitle("ImageNet predictions")
+  # plt.show()
 
-class CollectBatchStats(tf.keras.callbacks.Callback):
-  def __init__(self):
-    self.batch_losses = []
-    self.batch_acc = []
+  # """See the `LICENSE.txt` file for image attributions.
 
-  def on_train_batch_end(self, batch, logs=None):
-    self.batch_losses.append(logs['loss'])
-    self.batch_acc.append(logs['acc'])
-    self.model.reset_metrics()
+  # The results are far from perfect, but reasonable considering that these are not the classes the model was trained for (except "daisy").
 
-batch_stats_callback = CollectBatchStats()
+  # ### Download the headless model
 
-history = model.fit(train_ds, epochs=2,
-                    callbacks=[batch_stats_callback])
+  # TensorFlow Hub also distributes models without the top classification layer. These can be used to easily do transfer learning.
 
-# """Now after, even just a few training iterations, we can already see that the model is making progress on the task."""
+  # Any [compatible image feature vector model](https://tfhub.dev/s?module-type=image-feature-vector&q=tf2) from tfhub.dev will work here.
+  # """
 
-plt.figure()
-plt.ylabel("Loss")
-plt.xlabel("Training Steps")
-plt.ylim([0,2])
-plt.plot(batch_stats_callback.batch_losses)
-plt.show()
+  feature_extractor_model = "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4" #@param {type:"string"}
 
-plt.figure()
-plt.ylabel("Accuracy")
-plt.xlabel("Training Steps")
-plt.ylim([0,1])
-plt.plot(batch_stats_callback.batch_acc)
-plt.show()
+  # """Create the feature extractor. Use `trainable=False` to freeze the variables in the feature extractor layer, so that the training only modifies the new classifier layer."""
 
-# """### Check the predictions
+  feature_extractor_layer = hub.KerasLayer(
+      feature_extractor_model, input_shape=(224, 224, 3), trainable=False)
 
-# To redo the plot from before, first get the ordered list of class names:
-# """
+  # """It returns a 1280-length vector for each image:"""
 
-predicted_batch = model.predict(image_batch)
-predicted_id = np.argmax(predicted_batch, axis=-1)
-predicted_label_batch = class_names[predicted_id]
+  feature_batch = feature_extractor_layer(image_batch)
+  print(feature_batch.shape)
 
-# """Plot the result"""
+  # """### Attach a classification head
 
-plt.figure(figsize=(10,9))
-plt.subplots_adjust(hspace=0.5)
-for n in range(30):
-  plt.subplot(6,5,n+1)
-  plt.imshow(image_batch[n])
-  plt.title(predicted_label_batch[n].title())
-  plt.axis('off')
-_ = plt.suptitle("Model predictions")
-plt.show()
+  # Now wrap the hub layer in a `tf.keras.Sequential` model, and add a new classification layer.
+  # """
 
-# """## Export your model
+  num_classes = len(class_names)
 
-# Now that you've trained the model, export it as a SavedModel for use later on.
-# """
+  model = tf.keras.Sequential([
+    feature_extractor_layer,
+    tf.keras.layers.Dense(num_classes)
+  ])
 
-t = time.time()
+  model.summary()
 
-export_path = "/tmp/saved_models/{}".format(int(t))
-model.save(export_path)
+  predictions = model(image_batch)
 
-export_path
+  print(predictions.shape)
 
-# """Now confirm that we can reload it, and it still gives the same results:"""
+  # """### Train the model
 
-reloaded = tf.keras.models.load_model(export_path)
+  # Use compile to configure the training process:
+  # """
 
-result_batch = model.predict(image_batch)
-reloaded_result_batch = reloaded.predict(image_batch)
+  model.compile(
+    optimizer=tf.keras.optimizers.Adam(),
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    metrics=['acc'])
 
-abs(reloaded_result_batch - result_batch).max()
+  # """Now use the `.fit` method to train the model.
 
-"""This SavedModel can be loaded for inference later, or converted to [TFLite](https://www.tensorflow.org/lite/convert/) or [TFjs](https://github.com/tensorflow/tfjs-converter).
+  # To keep this example short train just 2 epochs. To visualize the training progress, use a custom callback to log the loss and accuracy of each batch individually, instead of the epoch average.
+  # """
 
-## Learn more
+  class CollectBatchStats(tf.keras.callbacks.Callback):
+    def __init__(self):
+      self.batch_losses = []
+      self.batch_acc = []
 
-Check out more [tutorials](https://www.tensorflow.org/hub/tutorials) for using image models from TensorFlow Hub.
-"""
+    def on_train_batch_end(self, batch, logs=None):
+      self.batch_losses.append(logs['loss'])
+      self.batch_acc.append(logs['acc'])
+      self.model.reset_metrics()
+
+  batch_stats_callback = CollectBatchStats()
+
+  history = model.fit(train_ds, epochs=2,
+                      callbacks=[batch_stats_callback])
+
+  # """Now after, even just a few training iterations, we can already see that the model is making progress on the task."""
+
+  plt.figure()
+  plt.ylabel("Loss")
+  plt.xlabel("Training Steps")
+  plt.ylim([0,2])
+  plt.plot(batch_stats_callback.batch_losses)
+  # plt.show()
+
+  plt.figure()
+  plt.ylabel("Accuracy")
+  plt.xlabel("Training Steps")
+  plt.ylim([0,1])
+  plt.plot(batch_stats_callback.batch_acc)
+  # plt.show()
+
+  # """### Check the predictions
+
+  # To redo the plot from before, first get the ordered list of class names:
+  # """
+
+  predicted_batch = model.predict(image_batch)
+  predicted_id = np.argmax(predicted_batch, axis=-1)
+  predicted_label_batch = class_names[predicted_id]
+
+  # """Plot the result"""
+
+  plt.figure(figsize=(10,9))
+  plt.subplots_adjust(hspace=0.5)
+  for n in range(30):
+    plt.subplot(6,5,n+1)
+    plt.imshow(image_batch[n])
+    plt.title(predicted_label_batch[n].title())
+    plt.axis('off')
+  _ = plt.suptitle("Model predictions")
+  # plt.show()
+
+  # """## Export your model
+
+  # Now that you've trained the model, export it as a SavedModel for use later on.
+  # """
+
+  t = time.time()
+
+  export_path = "/tmp/saved_models/{}".format(int(t))
+  model.save(export_path)
+
+  export_path
+
+  # """Now confirm that we can reload it, and it still gives the same results:"""
+
+  reloaded = tf.keras.models.load_model(export_path)
+
+  result_batch = model.predict(image_batch)
+  reloaded_result_batch = reloaded.predict(image_batch)
+
+  abs(reloaded_result_batch - result_batch).max()
+
+  """This SavedModel can be loaded for inference later, or converted to [TFLite](https://www.tensorflow.org/lite/convert/) or [TFjs](https://github.com/tensorflow/tfjs-converter).
+
+  ## Learn more
+
+  Check out more [tutorials](https://www.tensorflow.org/hub/tutorials) for using image models from TensorFlow Hub.
+  """
