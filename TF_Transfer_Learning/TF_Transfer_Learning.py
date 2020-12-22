@@ -301,7 +301,7 @@ def transfer_learning(path_to_directory):
     plt.title(predicted_label_batch[n].title())
     plt.axis('off')
   _ = plt.suptitle("Model predictions")
-  plt.show()
+  # plt.show()
 
   # """## Export your model
 
@@ -323,6 +323,8 @@ def transfer_learning(path_to_directory):
   reloaded_result_batch = reloaded.predict(image_batch)
 
   abs(reloaded_result_batch - result_batch).max()
+
+  plt.show()
 
   """This SavedModel can be loaded for inference later, or converted to [TFLite](https://www.tensorflow.org/lite/convert/) or [TFjs](https://github.com/tensorflow/tfjs-converter).
 
