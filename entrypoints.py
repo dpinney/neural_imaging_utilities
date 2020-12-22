@@ -7,7 +7,7 @@ def nerf(scene_folder):
 	return '3d model? video? many things?'
 
 def pole_classifier_train(training_images_folder):
-	# code goes here
+	transfer_learning(training_images_folder)
 	return 'trained model'
 
 def pole_classifier_classify(path_to_image_file, model=None):
@@ -25,6 +25,7 @@ def llff_spiral_render(llff_poses):
 	os.system('python2 mpis2video.py scenedir/mpis scenedir/spiral_path.txt scenedir/spiral_render.mp4 --crop_factor 0.8')
 	return 'LLFF/scenedir/spiral_render.mp4'
 
+# pole_classifier_classify('TF_Transfer_Learning/image0.jpg')
+pole_classifier_train('../poles_photos')
 # llff_poses('./LLFF/scenedir')
-pole_classifier_classify("TF_Transfer_Learning/image0.jpg")
 # llff_spiral_render()

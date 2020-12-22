@@ -65,6 +65,30 @@ import tensorflow_hub as hub
 
 from PIL import Image
 
+"""## An ImageNet classifier
+
+You'll start by using a pretrained classifer model to take an image and predict what it's an image of - no training required!
+
+### Download the classifier
+
+Use `hub.KerasLayer` to load a [MobileNetV2 model](https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2) from TensorFlow Hub. Any [compatible image classifier model](https://tfhub.dev/s?q=tf2&module-type=image-classification) from tfhub.dev will work here.
+"""
+
+classifier_model ="https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/classification/4" #@param {type:"string"}
+
+IMAGE_SHAPE = (224, 224)
+
+classifier = tf.keras.Sequential([
+  hub.KerasLayer(classifier_model, input_shape=IMAGE_SHAPE+(3,))
+])
+
+"""### Decode the predictions
+
+Take the predicted class ID and fetch the `ImageNet` labels to decode the predictions
+"""
+
+labels_path = tf.keras.utils.get_file('ImageNetLabels.txt','https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
+imagenet_labels = np.array(open(labels_path).read().splitlines())
 
 def image_classifier(uploaded): 
 
@@ -72,23 +96,6 @@ def image_classifier(uploaded):
     uploaded = Image.open(uploaded)
   except IOError: 
     pass
-
-  """## An ImageNet classifier
-
-  You'll start by using a pretrained classifer model to take an image and predict what it's an image of - no training required!
-
-  ### Download the classifier
-
-  Use `hub.KerasLayer` to load a [MobileNetV2 model](https://tfhub.dev/google/tf2-preview/mobilenet_v2/classification/2) from TensorFlow Hub. Any [compatible image classifier model](https://tfhub.dev/s?q=tf2&module-type=image-classification) from tfhub.dev will work here.
-  """
-
-  classifier_model ="https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/classification/4" #@param {type:"string"}
-
-  IMAGE_SHAPE = (224, 224)
-
-  classifier = tf.keras.Sequential([
-      hub.KerasLayer(classifier_model, input_shape=IMAGE_SHAPE+(3,))
-  ])
 
   """### Run it on a single image
 
@@ -110,14 +117,6 @@ def image_classifier(uploaded):
 
   predicted_class_2 = np.argmax(result_2[0], axis=-1)
 
-  """### Decode the predictions
-
-  Take the predicted class ID and fetch the `ImageNet` labels to decode the predictions
-  """
-
-  labels_path = tf.keras.utils.get_file('ImageNetLabels.txt','https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt')
-  imagenet_labels = np.array(open(labels_path).read().splitlines())
-
   plt.imshow(uploaded)
   plt.axis('off')
   predicted_class_name_2 = imagenet_labels[predicted_class_2]
@@ -126,7 +125,7 @@ def image_classifier(uploaded):
   plt.show()
 
 
-def transfer_learning():
+def transfer_learning(path_to_directory):
   """## Simple transfer learning
 
   But what if you want to train a classifier for a dataset with different classes? You can also use a model from TFHub to train a custom image classier by retraining the top layer of the model to recognize the classes in our dataset.
@@ -140,7 +139,7 @@ def transfer_learning():
   img_width = 224
 
   train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    "../../poles_photos",
+    path_to_directory,
     validation_split=0.2,
     subset="training",
     seed=123,
@@ -302,7 +301,7 @@ def transfer_learning():
     plt.title(predicted_label_batch[n].title())
     plt.axis('off')
   _ = plt.suptitle("Model predictions")
-  # plt.show()
+  plt.show()
 
   # """## Export your model
 
