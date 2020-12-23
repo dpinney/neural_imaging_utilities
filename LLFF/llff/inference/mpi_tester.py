@@ -1,7 +1,5 @@
 import tensorflow as tf 
 # import tensorflow_addons as tfa
-print("tensor flow version HERE")
-print(tf.version.VERSION)
 tf.contrib.resampler # dumb but required to get tf.contrib to load
 # tfa.image.resampler_ops.resampler # dumb but required to get tf.contrib to load
 import numpy as np

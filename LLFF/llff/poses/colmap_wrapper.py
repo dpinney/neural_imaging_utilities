@@ -2,6 +2,7 @@ import os
 import subprocess
 
 COLMAP = '/Users/thomasjankovic/Applications/COLMAP.app/Contents/MacOS/colmap'
+print("COLMAP path HERE " + COLMAP)
 
 # $ DATASET_PATH=/path/to/dataset
 

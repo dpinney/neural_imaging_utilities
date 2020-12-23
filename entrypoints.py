@@ -18,14 +18,14 @@ def llff_poses(scenedir_path):
 	os.system('python2 LLFF/imgs2poses.py ' + scenedir_path)
 	return "scenedir/poses_bounds.npy"
 
-def llff_spiral_render(llff_poses):
-	llff_poses(scenedir) 
-	os.system('python2 imgs2mpis.py scenedir scenedir/mpis --height 360')
-	os.system('python2 imgs2renderpath.py scenedir scenedir/spiral_path.txt --spiral')
-	os.system('python2 mpis2video.py scenedir/mpis scenedir/spiral_path.txt scenedir/spiral_render.mp4 --crop_factor 0.8')
+def llff_spiral_render():
+	# llff_poses('./LLFF/scenedir') 
+	os.system('python2 LLFF/imgs2mpis.py LLFF/scenedir LLFF/scenedir/mpis --height 360')
+	os.system('python2 LLFF/imgs2renderpath.py LLFF/scenedir LLFF/scenedir/spiral_path.txt --spiral')
+	os.system('python2 LLFF/mpis2video.py LLFF/scenedir/mpis LLFF/scenedir/spiral_path.txt LLFF/scenedir/spiral_render.mp4 --crop_factor 0.8')
 	return 'LLFF/scenedir/spiral_render.mp4'
 
 # pole_classifier_classify('TF_Transfer_Learning/image0.jpg')
 # pole_classifier_train('../poles_photos')
-llff_poses('./LLFF/scenedir')
-# llff_spiral_render()
+# llff_poses('./LLFF/scenedir')
+llff_spiral_render()
