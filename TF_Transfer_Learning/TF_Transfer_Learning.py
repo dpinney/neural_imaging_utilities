@@ -308,22 +308,29 @@ def transfer_learning(path_to_directory):
   # Now that you've trained the model, export it as a SavedModel for use later on.
   # """
 
-  t = time.time()
+  # t = time.time()
 
-  export_path = "/tmp/saved_models/{}".format(int(t))
-  model.save(export_path)
+  # export_path = "/tmp/saved_models/{}".format(int(t))
+  # model.save(export_path)
 
-  export_path
+  # print(export_path)
 
-  # """Now confirm that we can reload it, and it still gives the same results:"""
+  # # """Now confirm that we can reload it, and it still gives the same results:"""
 
-  reloaded = tf.keras.models.load_model(export_path)
+  # reloaded = tf.keras.models.load_model(export_path)
 
-  result_batch = model.predict(image_batch)
-  reloaded_result_batch = reloaded.predict(image_batch)
+  # result_batch = model.predict(image_batch)
+  # reloaded_result_batch = reloaded.predict(image_batch)
 
-  abs(reloaded_result_batch - result_batch).max()
+  # abs(reloaded_result_batch - result_batch).max()
 
+# save and export the model to file 
+  model_json = model.to_json()
+  with open("model_arch.json", "w") as json_file:
+  	json_file.write(model_json)
+  model.save_weights("model_weights.h5")
+
+  # show all plots at the end so that no processes are blocked 
   plt.show()
 
   """This SavedModel can be loaded for inference later, or converted to [TFLite](https://www.tensorflow.org/lite/convert/) or [TFjs](https://github.com/tensorflow/tfjs-converter).

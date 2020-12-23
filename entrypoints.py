@@ -26,6 +26,6 @@ def llff_spiral_render(llff_poses):
 	return 'LLFF/scenedir/spiral_render.mp4'
 
 # pole_classifier_classify('TF_Transfer_Learning/image0.jpg')
-pole_classifier_train('../poles_photos')
-# llff_poses('./LLFF/scenedir')
+# pole_classifier_train('../poles_photos')
+llff_poses('./LLFF/scenedir')
 # llff_spiral_render()
