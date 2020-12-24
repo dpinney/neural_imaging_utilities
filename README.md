@@ -23,3 +23,4 @@ After calculating poses for a directory of images (scenedir) using LLFF, the dir
 # Instructions For Use
 
 Call the pole_classifer_classify() function of entrypoints.py, which calls TF_Transfer_Learning/TF_Transfer_Learning.py, with the path to an image to classify that image on an untrained image classifier. To train the image classifer on a batch of photos, call the pole_classifier_train() function in entrypoints.py, which takes the path to a directory of images as an argument and also calls TF_Transfer_Learning/TF_Transfer_Learning.py. 
+To compute poses for a directory of images saved as JPEG files (LLFF/scenedir/images), call llff_poses() in entrypoints.py and feed the argument './LLFF/scenedir'. To output a spiral render MP4 of the image directory, call llff_spiral_render() in entrypoints.py. 
