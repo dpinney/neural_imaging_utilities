@@ -5,7 +5,7 @@ An image classifier and a 3D image reconstructor for drone imagery of utility po
 # Description
 
 The image classifier was sourced from Transfer learning with TensorFlow Hub and uses pretrained models from TensorFlow Hub. The model was then fine-tuned through transfer learning to recognize utility poles. Instructions on how to use original imagery are below. 
-3D reconstruction uses LLFF to generate poses to be used by NERF, which constructs a 3D representation. LLFF also outputs videos to illustrate its stitching capability and 3D field rendering capacity. NeRF requires a GPU to run and can be found in Google Colab. 
+3D reconstruction uses LLFF to generate poses to be used by NERF, which constructs a 3D representation. LLFF also outputs videos to illustrate its stitching capability and 3D field rendering capacity. NeRF can be found in Google Colab. 
 
 # Installation
 
