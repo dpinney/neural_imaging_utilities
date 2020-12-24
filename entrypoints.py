@@ -19,7 +19,7 @@ def llff_poses(scenedir_path):
 	return "scenedir/poses_bounds.npy"
 
 def llff_spiral_render():
-	# llff_poses('./LLFF/scenedir') 
+	llff_poses('./LLFF/scenedir') 
 	os.system('python2 LLFF/imgs2mpis.py LLFF/scenedir LLFF/scenedir/mpis --height 360')
 	os.system('python2 LLFF/imgs2renderpath.py LLFF/scenedir LLFF/scenedir/spiral_path.txt --spiral')
 	os.system('python2 LLFF/mpis2video.py LLFF/scenedir/mpis LLFF/scenedir/spiral_path.txt LLFF/scenedir/spiral_render.mp4 --crop_factor 0.8')
