@@ -17,12 +17,15 @@ def install():
 	os.system('pip install -r requirements.txt')
 	os.system('deactivate && cd ..')
 
-def nerf(scene_folder):
+def nerf():
 	os.system('. nerf/venv-nerf/bin/activate')
-	poses = llff_poses(scenedir)
-	# probably want to have documentation on what a valid scene_folder is
+	llff_poses(scenedir)
+	# 1. Relocate scenedir to nerf/data/nerf_llff_data
+	# 2. Duplicate and rename nerf/config_fern.txt
+	# 3. Within the above renamed file, rename expname and datadir
+	os.system('python run_nerf.py --config nerf/config_fern.txt')
 	os.system('deactivate')
-	return '3d model? video? many things?'
+	return 'object geometry and visual representation'
 
 def pole_classifier_train(training_images_folder):
 	os.system('. TF_Transfer_Learning/venv-TFTL/bin/activate')
@@ -40,7 +43,7 @@ def llff_poses(scenedir_path):
 	os.system('. LLFF/venv-LLFF/bin/activate')
 	os.system('python2 LLFF/imgs2poses.py ' + scenedir_path)
 	os.system('deactivate')
-	return "scenedir/poses_bounds.npy"
+	return 'scenedir/poses_bounds.npy'
 
 def llff_spiral_render():
 	llff_poses('./LLFF/scenedir')
@@ -52,6 +55,7 @@ def llff_spiral_render():
 	return 'LLFF/scenedir/spiral_render.mp4'
 
 # install()
+# nerf()
 # pole_classifier_classify('TF_Transfer_Learning/image0.jpg')
 # pole_classifier_train('../poles_photos')
 # llff_poses('./LLFF/scenedir')
