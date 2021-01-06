@@ -9,9 +9,10 @@ The image classifier was sourced from Transfer learning with TensorFlow Hub and 
 
 # Installation
 
+To install virtual environments with the required components of each subdirectory to this repository, call the install() function of entrypoints.py. 
 Transfer learning with TensorFlow Hub requires Python 3 and TensorFlow 2 (the full list of requirements are in requirements.txt under the TF_Transfer_Learning subdirectory of this repository). 
-The LLFF subdirectory, on the other hand, requires Python 2 and TensorFlow 1 (requirements.txt in the LLFF subdirectory). A virtual environment is suggested for the unique requirements of the subdirectory.
-NeRF requires GPU support to process 3D models in a timely manner (see Colab). The Google Colab requires a command line argument (analogous to config_fern.txt in the Colab example) that specicifies a data directory containing image data, poses, and focal data. 
+The LLFF subdirectory, on the other hand, requires Python 2 and TensorFlow 1 (requirements.txt in the LLFF subdirectory). 
+NeRF requires GPU support to process 3D models in a timely manner. run_nerf.py requires a command line argument (analogous to config_fern.txt in the Colab example) that specicifies a data directory containing image data, poses, and focal data. This data is outputted under LLFF/scenedir by calling the llff_poses() function within entrypoints.py. 
 Images to be 3D reconstructed within the LLFF subdirectory at a maximum view of 180 degrees should be taken in a grid format (see LLFF instructions on GitHub). For 360 degree 3D reconstruction, refer to the NeRF instructions on GitHub. NeRF outputs object geometry and a 3D rendering of the object. 
 
 # File Import 
@@ -24,3 +25,4 @@ After calculating poses for a directory of images (scenedir) using LLFF, the dir
 
 Call the pole_classifer_classify() function of entrypoints.py, which calls TF_Transfer_Learning/TF_Transfer_Learning.py, with the path to an image to classify that image on an untrained image classifier. To train the image classifer on a batch of photos, call the pole_classifier_train() function in entrypoints.py, which takes the path to a directory of images as an argument and also calls TF_Transfer_Learning/TF_Transfer_Learning.py. 
 To compute poses for a directory of images saved as JPEG files (LLFF/scenedir/images), call llff_poses() in entrypoints.py and feed the argument './LLFF/scenedir'. To output a spiral render MP4 of the image directory, call llff_spiral_render() in entrypoints.py. 
+Call nerf() to run NeRF on a directory of photos pre-processed with LLFF. Ensure that a new config_fern.txt file is matched to the target directory. Ensure that the directory is saved under nerf/data/nerf_llff_data. 
