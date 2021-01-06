@@ -5,5 +5,5 @@ scikit-image
 scikit-learn
 scipy
 sklearn
-tensorboard==2.3.0
-tensorflow==2.3
+tensorboard
+tensorflow

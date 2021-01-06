@@ -2,20 +2,9 @@ import os
 from TF_Transfer_Learning.TF_Transfer_Learning import *
 
 def install():
-	os.system('cd TF_Transfer_Learning && virtualenv venv-TFTL')
-	os.system('. venv-TFTL/bin/activate')
-	os.system('pip install -r requirements.txt')
-	os.system('deactivate && cd ..')
-
-	os.system('cd LLFF && virtualenv -p /usr/bin/python2.7 venv-LLFF')
-	os.system('. venv-LLFF/bin/activate')
-	os.system('pip install -r requirements.txt')
-	os.system('deactivate && cd ..')
-
-	os.system('cd nerf && virtualenv venv-nerf')
-	os.system('. venv-nerf/bin/activate')
-	os.system('pip install -r requirements.txt')
-	os.system('deactivate && cd ..')
+	os.system('cd TF_Transfer_Learning && virtualenv venv-TFTL && . venv-TFTL/bin/activate && pip install -r requirements.txt')
+	os.system('cd LLFF && virtualenv -p /usr/bin/python2.7 venv-LLFF && . venv-LLFF/bin/activate && pip install -r requirements.txt')
+	os.system('cd nerf && virtualenv venv-nerf && . venv-nerf/bin/activate && pip install -r requirements.txt')
 
 def nerf():
 	os.system('. nerf/venv-nerf/bin/activate')
