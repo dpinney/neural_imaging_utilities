@@ -17,12 +17,24 @@ Images to be 3D reconstructed within the LLFF subdirectory at a maximum view of 
 
 # File Import 
 
-For image classification: entrypoints.py requires a path to a single image as a string argument to the pole_classifier_classify() function. For entire directories of images to be run through the classifier as training data, save the images under unique class names in subdirectories under one directory and feed the path as a string argument to the pole_classifier_train() function. This can be done directly in entrypoints.py. 
-Images to be processed with the LLFF repository must be saved in a new directory in the LLFF subdirectory named scenedir in a folder within called images. Ensure that these images are saved as JPEG files. 
-After calculating poses for a directory of images (scenedir) using LLFF, the directory may be uploaded to Google Colab to be reconstructed using NeRF. First, edit the config_fern.txt file to correspond accurately with original data. 
+For image classification: Run the pole_classifier_classify() function in entrypoints.py, which requires command line arguments --file_path (file path here). To run entire directories of images through the classifier as training data, save the images in unique subdirectories under one directory and include command line arguments --dir_path (directory path here) when running the pole_classifier_train() function of entrypoints.py.  
+Images to be processed with the LLFF repository must be saved in a new directory in the LLFF subdirectory named scenedir in a folder within called images. Ensure that these images are saved as JPEG files. To compute poses, call function llff_poses() in entrypoints.py. To output an MP4 of the spiral render, call function llff_spiral_render() in entrypoints.py. Include command line arguments --scenedirpath (scene directory path here) with both commands. 
+After calculating poses for a directory of images (scenedir) using LLFF, the directory of images can be reconstructed using  NeRF.
 
 # Instructions For Use
 
-Call the pole_classifer_classify() function of entrypoints.py, which calls TF_Transfer_Learning/TF_Transfer_Learning.py, with the path to an image to classify that image on an untrained image classifier. To train the image classifer on a batch of photos, call the pole_classifier_train() function in entrypoints.py, which takes the path to a directory of images as an argument and also calls TF_Transfer_Learning/TF_Transfer_Learning.py. 
-To compute poses for a directory of images saved as JPEG files (LLFF/scenedir/images), call llff_poses() in entrypoints.py and feed the argument './LLFF/scenedir'. To output a spiral render MP4 of the image directory, call llff_spiral_render() in entrypoints.py. 
-Call nerf() to run NeRF on a directory of photos pre-processed with LLFF. Ensure that a new config_fern.txt file is matched to the target directory. Ensure that the directory is saved under nerf/data/nerf_llff_data. 
+Call the pole_classifer_classify() function of entrypoints.py, which uses TF_Transfer_Learning/TF_Transfer_Learning.py, with the path to an image to classify that image on an untrained image classifier. To train the image classifer on a batch of photos, call the pole_classifier_train() function in entrypoints.py, which takes the path to a directory of images as a command line argument and also uses TF_Transfer_Learning/TF_Transfer_Learning.py. 
+To compute poses for a directory of images saved as JPEG files (ex. LLFF/scenedir/images), call llff_poses() in entrypoints.py and include command line arguments (ex. --scenedirpath LLFF/scenedir). To output a spiral render MP4 of the image directory, call llff_spiral_render() in entrypoints.py and include the same command line arguments. 
+Call nerf() to run NeRF on a directory of photos pre-processed with LLFF after completing the following steps: First, relocate scenedir to nerf/data/nerf_llff_data. Next, duplicate and rename nerf/config_fern.txt. Within the renamed config file, rename expname and datadir. 
+
+# Single Image Classification Example
+
+$ python3 entrypoints.py --filepath ../images/image1.jpg
+
+# Batch Training and Classification Example
+
+$ python3 entrypoints.py --dirpath ../images/folder1
+
+# LLFF Poses and Spiral Render Examples 
+
+$ python3 entrypoints.py --scenedir LLFF/scenedir
