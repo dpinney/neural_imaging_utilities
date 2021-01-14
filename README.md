@@ -35,6 +35,6 @@ $ python3 entrypoints.py --filepath ../images/image1.jpg
 
 $ python3 entrypoints.py --dirpath ../images/folder1
 
-# LLFF Poses and Spiral Render Examples 
+# LLFF Poses and Spiral Render Example
 
 $ python3 entrypoints.py --scenedir LLFF/scenedir
