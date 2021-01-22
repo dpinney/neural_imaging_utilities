@@ -40,14 +40,18 @@ Call nerf() to run NeRF on a directory of photos pre-processed with LLFF after c
 
 # Example Usage
 
+Installation, venv setup (requires both python2 and python3)
+
+`python3 entrypoints.py --install`
+
 Single Image Classification Example
 
-`$ python3 entrypoints.py --filepath ../images/image1.jpg`
+`python3 entrypoints.py --filepath ../images/image1.jpg`
 
 Batch Training and Classification Example
 
-`$ python3 entrypoints.py --dirpath ../images/folder1`
+`python3 entrypoints.py --dirpath ../images/folder1`
 
 LLFF Poses and Spiral Render Example
 
-`$ python3 entrypoints.py --scenedir LLFF/scenedir`
+`python3 entrypoints.py --scenedir LLFF/scenedir`
