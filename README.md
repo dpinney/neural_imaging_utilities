@@ -38,14 +38,16 @@ To compute poses for a directory of images saved as JPEG files (ex. LLFF/scenedi
 
 Call nerf() to run NeRF on a directory of photos pre-processed with LLFF after completing the following steps: First, relocate scenedir to nerf/data/nerf_llff_data. Next, duplicate and rename nerf/config_fern.txt. Within the renamed config file, rename expname and datadir. 
 
-# Single Image Classification Example
+# Example Usage
+
+Single Image Classification Example
 
 `$ python3 entrypoints.py --filepath ../images/image1.jpg`
 
-# Batch Training and Classification Example
+Batch Training and Classification Example
 
 `$ python3 entrypoints.py --dirpath ../images/folder1`
 
-# LLFF Poses and Spiral Render Example
+LLFF Poses and Spiral Render Example
 
 `$ python3 entrypoints.py --scenedir LLFF/scenedir`
