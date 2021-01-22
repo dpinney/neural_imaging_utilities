@@ -24,6 +24,7 @@ parser = argparse.ArgumentParser(description='Pass path to image file')
 parser.add_argument('--filepath', type=file_path)
 parser.add_argument('--dirpath', type=dir_path)
 parser.add_argument('--scenedirpath', type=scenedir_path)
+parser.add_argument('--install')
 args = parser.parse_args()
 
 def install():
@@ -57,6 +58,8 @@ def llff_spiral_render():
 	llff_poses()
 	os.system('. LLFF/venv-LLFF/bin/activate; python2 LLFF/imgs2mpis.py LLFF/scenedir LLFF/scenedir/mpis --height 360; python2 LLFF/imgs2renderpath.py LLFF/scenedir LLFF/scenedir/spiral_path.txt --spiral; python2 LLFF/mpis2video.py LLFF/scenedir/mpis LLFF/scenedir/spiral_path.txt LLFF/scenedir/spiral_render.mp4 --crop_factor 0.8') 
 	return 'LLFF/scenedir/spiral_render.mp4'
+
+# todo: implement argument handling.
 
 # install()
 # nerf()
