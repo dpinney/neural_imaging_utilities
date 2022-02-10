@@ -5,4 +5,4 @@ Pillow
 scikit-image
 scipy
 tensorboard==1.15.0
-tensorflow==1.15.0
+tensorflow==2.5.3
